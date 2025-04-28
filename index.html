@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="et">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Raadiojaamad Eestis</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --text-color: #ffffff;
+            --radio-bg: #493b3b;
+            --radio-hover-bg: #320000;
+            --button-bg: #ff5722;
+            --button-hover-bg: #e64a19;
+            --button-active-bg: #d84315;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(270deg, #ff5722, #007bff, #e64a19);
+            background-size: 400% 400%;
+            animation: moveBackground 10s infinite;
+            color: var(--text-color);
+            text-align: center;
+            margin: 0;
+            padding: 0;
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        @keyframes moveBackground {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        h1 {
+            margin-top: 20px;
+            font-size: 3rem;
+            font-weight: 600;
+        }
+
+        .radio-info {
+            margin-top: 10px;
+            font-size: 1.2rem;
+            font-weight: 400;
+            color: var(--text-color);
+        }
+
+        #radioList {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .radio {
+            flex: 0 0 calc(40% - 20px);
+            max-width: 250px;
+            padding: 20px;
+            border: 2px solid #888;
+            border-radius: 50px;
+            background-color: var(--radio-bg);
+            cursor: pointer;
+            transition: background-color 0.3s, transform 0.2s;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+        }
+
+        .radio:hover {
+            background-color: var(--radio-hover-bg);
+            transform: scale(1.05);
+        }
+
+        .radio-description {
+            font-size: 1rem;
+            color: #e27878;
+            margin-top: 10px;
+            font-weight: 300;
+        }
+
+        .volume-control, .buttons {
+            margin-top: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .volume-control input[type="range"] {
+            width: 200px;
+            border-radius: 9999px;
+            overflow: hidden;
+            height: 10px;
+            -webkit-appearance: none;
+            background: #555;
+        }
+
+        .volume-control input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: var(--button-bg);
+            cursor: pointer;
+        }
+
+        button {
+            background-color: var(--button-bg);
+            color: var(--text-color);
+            border: none;
+            padding: 12px 30px;
+            font-size: 1.2rem;
+            border-radius: 9999px;
+            cursor: pointer;
+            transition: background-color 0.3s, transform 0.2s;
+            font-weight: 600;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4);
+        }
+
+        button:hover {
+            background-color: var(--button-hover-bg);
+            transform: scale(1.05);
+        }
+
+        button:active {
+            background-color: var(--button-active-bg);
+            transform: scale(0.95);
+        }
+
+        .color-picker {
+            margin-top: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .color-picker input[type="color"] {
+            width: 40px;
+            height: 40px;
+            border: none;
+            border-radius: 50%;
+            cursor: pointer;
+            background: none;
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            appearance: none;
+        }
+
+        .color-picker input[type="color"]::-webkit-color-swatch {
+            border: none;
+            border-radius: 50%;
+        }
+
+        .color-picker input[type="color"]::-moz-color-swatch {
+            border: none;
+            border-radius: 50%;
+        }
+
+        #visualizer {
+            display: block;
+            margin: 20px auto;
+            background: transparent;
+            border-radius: 10px;
+            box-shadow: none;
+            width: 90%;
+            max-width: 1000px;
+            height: 300px;
+        }
+    </style>
+</head>
+<body>
+    <h2>Raadiojaamad Eestis</h2>
+    <div id="radioInfo" class="radio-info">Vali raadiojaam, et mängida.</div>
+    <h0>By #hffff</h0>
+    <div id="radioList"></div>
+    <audio id="audioPlayer" crossorigin="anonymous"></audio>
+    <canvas id="visualizer" width="800" height="200"></canvas>
+
+    <div class="volume-control">
+        <label for="volumeSlider">Helitugevus:</label>
+        <input id="volumeSlider" type="range" min="0" max="1" step="0.01" value="1">
+    </div>
+
+    <div class="buttons">
+        <button id="pauseButton">Paus</button>
+    </div>
+
+    <div class="color-picker">
+        <label for="waveColor">Vali helilaine värv:</label>
+        <input id="waveColor" type="color" value="#ff5722">
+        <label for="color1">Vali taustavärv 1:</label>
+        <input id="color1" type="color" value="#ff5722">
+        <label for="color2">Vali taustavärv 2:</label>
+        <input id="color2" type="color" value="#007bff">
+        <label for="color3">Vali taustavärv 3:</label>
+        <input id="color3" type="color" value="#e64a19">
+    </div>
+
+    <script>
+        const radios = [
+            { name: "MyHits", url: "https://router.euddn.net/8103046e16b71d15d692b57c187875c7/myhits.mp3", description: "Popmuusika ja tänapäeva hitid." },
+            { name: "SkyPlus", url: "https://edge03.cdn.bitflip.ee:8888/SKYPLUS?_i=53a62a75.mp3", description: "Eesti populaarseimad lood ja meelelahutus." },
+            { name: "Power Hit Radio", url: "https://ice.leviracloud.eu/phr192-mp3", description: "Parimad tantsuhitid ja elektrooniline muusika." },
+            { name: "Raadio Elmar", url: "https://router.euddn.net/8103046e16b71d15d692b57c187875c7/elmar.mp3", description: "Eesti muusika ja rahvalikud lood." },
+            { name: "Star FM", url: "https://ice.leviracloud.eu/star192-mp3", description: "Rahvusvahelised hitid ja klassikaline pop." },
+            { name: "Rock FM", url: "https://edge03.cdn.bitflip.ee:8888/rck", description: "Parimad rockmuusika hitid." },
+            { name: "TRE Raadio", url: "https://sc2.treraadio.ee/pohja-tre", description: "Kohalikud uudised ja muusika." },
+            { name: "Retro FM", url: "https://skymedia-live.bitflip.ee/RETRO", description: "80ndate ja 90ndate hitid." },
+            { name: "Võmba FM", url: "https://c4.radioboss.fm:18123/live", description: "Meelelahutus ja natuke erilisem." },
+            { name: "HardBase FM", url: "https://listener1.mp3.tb-group.fm/hb.mp3", description: "Kõva tümakas ja kõva bass." },
+            { name: "BassDrive FM", url: "https://chi.bassdrive.co/stream", description: "Ilge Bass Sõiduks." },
+            { name: "Real Hardstyle 24/7", url: "https://stream.realhardstyle.nl/", description: "Hardstyle ja elektrooniline muusika." }
+        ];
+
+        const radioList = document.getElementById('radioList');
+        const audioPlayer = document.getElementById('audioPlayer');
+        const volumeSlider = document.getElementById('volumeSlider');
+        const radioInfo = document.getElementById('radioInfo');
+        const pauseButton = document.getElementById('pauseButton');
+        const waveColorPicker = document.getElementById('waveColor');
+        const color1 = document.getElementById('color1');
+        const color2 = document.getElementById('color2');
+        const color3 = document.getElementById('color3');
+
+        const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+        const analyser = audioContext.createAnalyser();
+        let source = null;
+
+        function initializeAudioContext() {
+            if (!source) {
+                source = audioContext.createMediaElementSource(audioPlayer);
+                source.connect(analyser);
+                analyser.connect(audioContext.destination);
+                analyser.fftSize = 2048;
+                analyser.smoothingTimeConstant = 0.85;
+            }
+        }
+
+        const canvas = document.getElementById('visualizer');
+        const ctx = canvas.getContext('2d');
+        const bufferLength = analyser.frequencyBinCount;
+        const dataArray = new Uint8Array(bufferLength);
+
+        function drawWaveform() {
+            requestAnimationFrame(drawWaveform);
+
+            analyser.getByteFrequencyData(dataArray);
+
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            const waveColor = waveColorPicker.value;
+            ctx.fillStyle = waveColor;
+            ctx.strokeStyle = waveColor;
+
+            ctx.lineWidth = 2;
+            ctx.lineCap = 'round';
+            ctx.lineJoin = 'round';
+
+            ctx.shadowBlur = 15;
+            ctx.shadowColor = waveColor;
+
+            const barWidth = canvas.width / bufferLength * 2.5;
+            let x = 0;
+
+            ctx.beginPath();
+            ctx.moveTo(0, canvas.height);
+
+            for (let i = 0; i < bufferLength; i++) {
+                const percent = dataArray[i] / 255;
+                const height = canvas.height * percent;
+                const y = canvas.height - height;
+
+                if (i === 0) {
+                    ctx.moveTo(x, y);
+                } else {
+                    const xc = (x + (x - barWidth)) / 2;
+                    ctx.quadraticCurveTo(xc, y, x, y);
+                }
+
+                x += barWidth;
+            }
+
+            ctx.lineTo(canvas.width, canvas.height);
+            ctx.lineTo(0, canvas.height);
+
+            ctx.fill();
+            ctx.stroke();
+        }
+
+        drawWaveform();
+
+        radios.forEach(radio => {
+            const div = document.createElement('div');
+            div.className = 'radio';
+            div.innerText = radio.name;
+
+            const infoDiv = document.createElement('div');
+            infoDiv.className = 'radio-description';
+            infoDiv.innerText = radio.description;
+
+            div.onclick = () => {
+                initializeAudioContext();
+                if (audioContext.state === 'suspended') {
+                    audioContext.resume();
+                }
+                audioPlayer.src = radio.url;
+                audioPlayer.play().catch(error => {
+                    console.error("Heli taasesitus ebaõnnestus:", error);
+                });
+                radioInfo.innerText = `Mängib: ${radio.name}`;
+                pauseButton.innerText = "Paus";
+            };
+
+            div.appendChild(infoDiv);
+            radioList.appendChild(div);
+        });
+
+        volumeSlider.addEventListener('input', () => {
+            audioPlayer.volume = volumeSlider.value;
+        });
+
+        pauseButton.addEventListener('click', () => {
+            if (audioPlayer.paused) {
+                audioPlayer.play();
+                pauseButton.innerText = "Paus";
+            } else {
+                audioPlayer.pause();
+                pauseButton.innerText = "Jätka";
+            }
+        });
+
+        function updateBackground() {
+            document.body.style.background = `linear-gradient(270deg, ${color1.value}, ${color2.value}, ${color3.value})`;
+            document.body.style.backgroundSize = "400% 400%";
+            document.body.style.animation = "moveBackground 10s infinite";
+        }
+
+        color1.addEventListener('input', updateBackground);
+        color2.addEventListener('input', updateBackground);
+        color3.addEventListener('input', updateBackground);
+
+    </script>
+</body>
+</html>
